@@ -1,12 +1,12 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const correctQuestionSchema = new mongoose.Schema(
+const correctSolutionSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-    }, 
+    },
     questionId: {
       type: String,
       required: true,
@@ -14,7 +14,7 @@ const correctQuestionSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-    }, 
+    },
     prompt: {
       type: String,
       required: true,
@@ -37,15 +37,15 @@ const correctQuestionSchema = new mongoose.Schema(
       required: true,
     }, // Programming language used for the solution
     comments: [{ type: String }], // Comments or explanations provided by users for the solution
-    relatedQuestions: [{ type: String }], // IDs or references to related questions
+    relatedQuestions: [{ type: mongoose.Schema.Types.ObjectId, ref: "CorrectSolution" }], // IDs or references to related questions
   },
-  { timestamps }
+  { timestamps: true }
 );
 
 // Define model for the schema
-const CorrectQuestion = mongoose.model(
-  "CorrectQuestion",
-  correctQuestionSchema
+export const CorrectSolution = mongoose.model(
+  "CorrectSolution",
+  correctSolutionSchema
 );
 
-module.exports = CorrectQuestion;
+
