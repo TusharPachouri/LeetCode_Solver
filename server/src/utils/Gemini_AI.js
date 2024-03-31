@@ -1,128 +1,161 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-// const { GoogleGenerativeAI } = require("@google/generative-ai");
-// Access your API key as an environment variable (see "Set up your API key" above)
+import e from "express";
+
+// Access your API key as an environment variable (replace 'YOUR_API_KEY' with your actual API key)
 const genAI = new GoogleGenerativeAI("AIzaSyB_sGFC4SvnIhKXwVFwiqtqasfTfZLnnmA");
 
-async function geminiLeetCodeSolver(
-  question,
-  solutionSnippet,
-  relatedQuestionsList,
-  programmingLanguage
+async function solveLeetCodeProblem(
+  title,
+  promptQuestion,
+  testCases,
+  constraints,
+  tags,
+  snippet,
+  language,
+  userComments,
+  relatedQuestionsArray
 ) {
   // For text-only input, use the gemini-pro model
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-  const prompt = `
-  #Objective: Given a new coding problem and a set of related, previously solved problems, analyze the provided examples and learn from them to develop an efficient solution to the new problem.
+  const relatedQuestionsList = relatedQuestionsArray.map(
+    (question) => `- ${question.title}`
+  );
 
-#Instructions to Gemini AI:
-Gemini, we have encountered a new coding problem: "${question}", which shares similarities with the following previously solved problems: ${relatedQuestionsList}
-
-Your task is to:
-
-1. Carefully analyze the provided related questions and their solutions.
-2. Identify common patterns, algorithms, data structures, and problem-solving strategies used in those questions.
-3. Leverage the learned knowledge to develop an efficient and robust solution for the new problem.
-4. Implement the solution in "${programmingLanguage}" programming language.
-5. Ensure your solution is well-documented, with clear comments explaining the approach, edge cases, and any necessary explanations.
-
-#Additional Considerations:
-- Pay close attention to the time and space complexities of your solution, aiming for optimal efficiency.
-- Consider edge cases and handle them appropriately in your solution.
-- If applicable, provide test cases or examples to validate your solution.
-- Feel free to refer to any relevant resources, documentation, or coding best practices as needed.
-
-#Output Format:
-1. Provide the solution code in ${programmingLanguage} format within the following code snippet:
-
-${solutionSnippet}
-
-2. Include clear comments explaining the approach, time and space complexities, edge cases, and any other relevant information.
-3. If applicable, provide test cases or examples to validate the solution.
-
-#Example Output:
-/**
- * Solution for "Title of the Question"
- * Time Complexity: O(n)
- * Space Complexity: O(1)
- *
- * Approach:
- * [Explain the approach and any relevant details]
- *
- * Edge Cases:
- * [Mention any edge cases and how they are handled]
- *
- * [Solution Code]
- *
- * Example Usage:
- * [Provide test cases or examples to validate the solution]
- */
+  const solutionSnippet = `
+     \`\`\`${language}
+           ${snippet}
+     \`\`\`
   `;
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  let solution = response.text();
-  solution = solution.replace(/\*\*(.*?)\*\*/g, "<h2>$1</h2>");
-  // console.log(content);
-  return solution;
-}
-// geminiContent("How to make a website")
-async function testGeminiLeetCodeSolver() {
-  try {
-    const relatedQuestions = [
-      "Two Sum",
-      "Add Two Numbers",
-      "Longest Substring Without Repeating Characters",
-    ];
-    const question = `3. Longest Substring Without Repeating Characters
-    Medium
-    Topics
-    Companies
-    Given a string s, find the length of the longest 
-    substring
-     without repeating characters.
-    
-     
-    
-    Example 1:
-    
-    Input: s = "abcabcbb"
-    Output: 3
-    Explanation: The answer is "abc", with the length of 3.
-    Example 2:
-    
-    Input: s = "bbbbb"
-    Output: 1
-    Explanation: The answer is "b", with the length of 1.
-    Example 3:
-    
-    Input: s = "pwwkew"
-    Output: 3
-    Explanation: The answer is "wke", with the length of 3.
-    Notice that the answer must be a substring, "pwke" is a subsequence and not a substring.
-     
-    
-    Constraints:
-    
-    0 <= s.length <= 5 * 104
-    s consists of English letters, digits, symbols and spaces.
+
+  const chat = model.startChat({
+    history: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: `
+        #Objective: Given a new coding problem and a set of related, previously solved problems, analyze the provided examples and learn from them to develop an efficient solution to the new problem.
+
+        #Problem: ${title}
+        
+        ${promptQuestion}
+        
+        #Test Cases:
+        ${testCases.join("\n")}
+        
+        #Constraints:
+        ${constraints.join("\n")}
+        
+        #Tags:
+        ${tags.join(", ")}
+        
+        #User Comments:
+        ${userComments}
+        `,
+          },
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {
+            text: `
+        #Instructions to Gemini AI:
+
+        Gemini, we have encountered a new coding problem: "${title}", which shares similarities with the following previously solved problems:
+        ${relatedQuestionsList.join("\n")}
+        
+        Your task is to:
+        
+        1. Carefully analyze the provided related questions and their solutions.
+        2. Identify common patterns, algorithms, data structures, and problem-solving strategies used in those questions.
+        3. Leverage the learned knowledge to develop an efficient and robust solution for the new problem.
+        4. Implement the solution in "${language}" programming language.
+        5. Ensure your solution is well-documented, with clear comments explaining the approach, edge cases, and any necessary explanations.
+        `,
+          },
+        ],
+      },
+      {
+        role: "user",
+        parts: [
+          {
+            text: `
+          #Additional Considerations:
+
+          - Pay close attention to the time and space complexities of your solution, aiming for optimal efficiency.
+          - Consider edge cases and handle them appropriately in your solution.
+          - Provide test cases or examples to validate your solution.
+          - Feel free to refer to any relevant resources, documentation, or coding best practices as needed.
+          
+          #Output Format:
+          
+          1. Provide the solution code in ${language} format within the following code snippet:
+          
+          ${solutionSnippet}
+          
+          2. Include clear comments explaining the approach, time and space complexities, edge cases, and any other relevant information.
+          3. Provide test cases or examples to validate the solution.
+          
+          #Example Output: (Template) Output format for the solution, and object name should be Output.
+          #Code should be written in the following format: and should be formatted as a JSON object.
+          #The JSON object should contain the following fields, and the values should be replaced with the appropriate information.
+          Output = {
+            "title": {"Title of the Question"},
+            "timeComplexity": {"O(n)"},
+            "spaceComplexity": {"O(1)"},
+            "approach": ["[Explain the approach and any relevant details]"],
+            "solutionCode": {"[Solution Code]"},
+            "tags": ["[Tags]"],
+          };
+          `,
+          },
+        ],
+      },
+      // Add a model response here to complete the turn
+      {
+        role: "model",
+        parts: [
+          {
+            text: `
+      I understand. Based on the provided problem details (title, prompt, test cases, constraints, tags, and related questions), I will analyze the problem and leverage insights from the related questions to propose an efficient solution in ${language}.
+
+      Please ensure the solution includes:
+        - Clear and well-commented code explaining the approach, time/space complexity, and edge cases.
+        - Test cases or examples to validate the solution.
+    `,
+          },
+        ],
+      },
+    ],
+    generationConfig: {
+      maxOutputTokens: 2000,
+      temperature: 0.6, // Prioritize focus and relevance (adjust between 0.5-0.8)
+      topP: 0.9, // Emphasize more likely continuations (adjust between 0.8-0.95)
+    },
+  });
+
+  const msg =
+    `Write the solution code for the new problem. In the code snippet, include comments explaining the approach, time and space complexities, edge cases, and any other relevant information. Provide test cases or examples to validate the solution.
+    #Example Output: (Template) Output format for the solution, and object name should be Output.
+          #Code should be written in the following format: and should be formatted as a JSON object.
+          #The JSON object should contain the following fields, and the values should be replaced with the appropriate information.
+          Output = {
+            "title": {"Title of the Question"},
+            "timeComplexity": {"O(n)"},
+            "spaceComplexity": {"O(1)"},
+            "approach": ["[Explain the approach and any relevant details]"],
+            "solutionCode": {"[Solution Code]"},
+            "tags": ["[Tags]"],
+          };
     `;
-    const solutionSnippet = `class Solution:
-    def lengthOfLongestSubstring(self, s: str) -> int:
-        `
-    const programmingLanguage = "python";
 
-    const solutionContent = await geminiLeetCodeSolver(
-      question,
-      solutionSnippet,
-      relatedQuestions,
-      programmingLanguage
-    );
-    console.log("Generated solution content:", solutionContent);
-  } catch (error) {
-    console.error("Error:", error);
-  }
+  const result = await chat.sendMessage(msg);
+  const response = await result.response;
+  const text = response.text();
+  // console.log('text:',text);
+  return text;
 }
-// Call the test function
-testGeminiLeetCodeSolver();
 
-export { geminiLeetCodeSolver };
+export { solveLeetCodeProblem };

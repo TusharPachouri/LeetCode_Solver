@@ -85,7 +85,7 @@ const findRelatedSolutions = asyncHandler(async (req, res) => {
   })
     .where("_id")
     .ne(questionId)
-    .select("-relatedQuestions");
+    .select("-relatedQuestions -_id -__v -user -questionId -prompt -comments -updatedAt -createdAt");
   return res
     .status(200)
     .json(
