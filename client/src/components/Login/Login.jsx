@@ -2,8 +2,8 @@
 
 function Login() {
   return (
-    <div>
-      <div className="w-full max-w-md p-4 rounded-md shadow sm:p-8 dark:bg-gray-50 dark:text-gray-800">
+    <div className="dark:bg-gray-500  dark:text-gray-800 h-full py-10">
+      <div className=" relative flex min-h-screen flex-col justify-center overflow-hidden w-full max-w-md p-4 rounded-xl shadow sm:p-8 dark:bg-gray-400 dark:text-gray-800">
         <h2 className="mb-3 text-3xl font-semibold text-center">
           Login to your account
         </h2>
@@ -69,7 +69,7 @@ function Login() {
         <form action="" className="space-y-8">
           <div className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="email"  className="block text-sm">
+              <label htmlFor="email" className="block text-sm">
                 Email address
               </label>
               <input
@@ -81,18 +81,18 @@ function Login() {
               />
             </div>
             <div className="space-y-2">
-            <div className="flex justify-between">
+              <div className="flex justify-between">
                 <label htmlFor="password" className="text-sm">
-                    Password
+                  Password
                 </label>
                 <a
-                    rel="noopener noreferrer"
-                    href="#"
-                    className="text-xs hover:underline dark:text-gray-600"
+                  rel="noopener noreferrer"
+                  href="#"
+                  className="text-xs hover:underline dark:text-gray-600"
                 >
-                    Forgot password?
+                  Forgot password?
                 </a>
-            </div>
+              </div>
               <input
                 type="password"
                 name="password"
