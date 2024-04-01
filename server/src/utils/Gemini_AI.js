@@ -42,13 +42,13 @@ async function solveLeetCodeProblem(
         ${promptQuestion}
         
         #Test Cases:
-        ${testCases.join("\n")}
+        ${testCases}
         
         #Constraints:
-        ${constraints.join("\n")}
+        ${constraints}
         
         #Tags:
-        ${tags.join(", ")}
+        ${tags}
         
         #User Comments:
         ${userComments}
@@ -102,12 +102,7 @@ async function solveLeetCodeProblem(
           #Code should be written in the following format: and should be formatted as a JSON object.
           #The JSON object should contain the following fields, and the values should be replaced with the appropriate information.
           Output = {
-            "title": {"Title of the Question"},
-            "timeComplexity": {"O(n)"},
-            "spaceComplexity": {"O(1)"},
-            "approach": ["[Explain the approach and any relevant details]"],
-            "solutionCode": {"[Solution Code]"},
-            "tags": ["[Tags]"],
+            "Solution": {"Solution Code"},
           };
           `,
           },
@@ -142,12 +137,7 @@ async function solveLeetCodeProblem(
           #Code should be written in the following format: and should be formatted as a JSON object.
           #The JSON object should contain the following fields, and the values should be replaced with the appropriate information.
           Output = {
-            "title": {"Title of the Question"},
-            "timeComplexity": {"O(n)"},
-            "spaceComplexity": {"O(1)"},
-            "approach": ["[Explain the approach and any relevant details]"],
-            "solutionCode": {"[Solution Code]"},
-            "tags": ["[Tags]"],
+            "Solution": {"Solution Code"},
           };
     `;
 
