@@ -20,7 +20,7 @@ function App() {
           {" "}
           {/* Adjusted padding for mobile */}
           <Routes>
-            <Route path="/home" element={<LandingPage />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/about" element={<AboutUs />} />
             {/* <Route path="/post/:postId" element={<Post />} />
             <Route path="/search/:search" element={<Search />} />
