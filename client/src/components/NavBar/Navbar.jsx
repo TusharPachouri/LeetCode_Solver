@@ -25,7 +25,7 @@ function Navbar() {
           <ul className="items-stretch hidden space-x-3 md:flex">
             <li className="flex">
               <Link
-                to="/home"
+                to="/"
                 className="flex items-center px-4 -mb-1 border-b-2 dark:border-"
               >
                 Home
