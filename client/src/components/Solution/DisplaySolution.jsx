@@ -6,23 +6,37 @@ function DisplaySolution() {
 
   const formatCodeBlock = (code) => {
     // Remove backticks and newlines
-    code = code.replace(/```/g, '').trim();
+    code = code.replace(/```/g, "").trim();
+
+    // Remove unnecessary backslashes
+    code = code.replace(/\\+/g, "\\");
+
+    // Replace escaped newlines with <br> tags
+    code = code.replace(/\\n/g, "\n");
 
     // Indent code block with 4 spaces
-    const lines = code.split('\n').map(line => '    ' + line);
-    return lines.join('\n');
+    code = code.replace(/\\/g, "");
+    const lines = code.split("\n").map((line) => "    " + line);
+    return lines.join("\n");
   };
 
   const formatContent = (content) => {
     // Replace ** ** with <strong> tags
-    return content.replace(/\*\*(.*?)\*\*/g, (match, group) => `<strong>${group}</strong>`);
+    return content.replace(
+      /\*\*(.*?)\*\*/g,
+      (match, group) => `<strong>${group}</strong>`
+    );
   };
 
   return (
     <div>
       {responseData ? (
         <>
-          <h2>{responseData.success ? formatContent("Solution Generated Successfully") : formatContent("Failed to Generate Solution")}</h2>
+          <h2>
+            {responseData.success
+              ? formatContent("Solution Generated Successfully")
+              : formatContent("Failed to Generate Solution")}
+          </h2>
           {responseData.success && (
             <div>
               <h3>Output:</h3>

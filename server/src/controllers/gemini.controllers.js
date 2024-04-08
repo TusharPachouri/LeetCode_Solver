@@ -1,4 +1,5 @@
 import { solveLeetCodeProblem } from "../utils/Gemini_AI.js";
+import { formattedSolution} from "../utils/Gemini_Formatter.js";
 import { ApiError } from "../utils/ApiError.js";
 import { CorrectSolution } from "../models/correctSolution.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -39,10 +40,11 @@ const generateSolution = asyncHandler(async (req, res) => {
     userComments,
     relatedQuestionsArray
   );
-  
+  const formatSolution = await formattedSolution(solution);
+  const jsonFormatSolution = JSON.stringify(formatSolution);
   return res
     .status(200)
-    .json(new ApiResponse(200, solution, "Content generated successfully"));
+    .json(new ApiResponse(200, jsonFormatSolution, "Content generated successfully"));
 });
 
 export { generateSolution };
